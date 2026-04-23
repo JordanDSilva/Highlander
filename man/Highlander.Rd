@@ -13,7 +13,7 @@ Highlander(parm = NULL, Data, likefunc, likefunctype = NULL, liketype = NULL,
   dynlim = 2, ablim = 0, optim_iters = 2, Niters = c(100,100), NfinalMCMC = Niters[2],
   walltime = Inf, CMAargs = list(control=list(maxit=Niters[1])),
   LDargs = list(control=list(abstol=0.1), Iterations = Niters[2],
-  Algorithm = 'CHARM', Thinning = 1), parm.names = NULL, keepall = FALSE
+  Algorithm = 'CHARM', Thinning = 1, CPUs = 1), parm.names = NULL, keepall = FALSE
   )
 }
 %- maybe also 'usage' for other objects documented here.
@@ -70,7 +70,7 @@ Numeric scalar; the maximum allowed CPU time for \code{Highlander} in minutes. T
 List; arguments to be passed into \code{\link{cmaeshpc}}.
 }
   \item{LDargs}{
-List; arguments to be passed into \code{\link{LaplacesDemon}}.
+List; arguments to be passed into \code{\link{LaplacesDemon}} or \code{\link{LaplacesDemon.hpc}}. If CPUs>1 then it will use multiprocessing LaplacesDemon. 
 }
   \item{parm.names}{
 Character vector; optional vector of parameter names. This will over-write the current names in \option{parm} if these also exist. If provided it ensures the \option{parm} and \option{CMA_last$par} outputs are named.

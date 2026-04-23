@@ -3,7 +3,7 @@ Highlander=function(parm=NULL, Data, likefunc, likefunctype=NULL, liketype=NULL,
                     Niters=c(100,100), NfinalMCMC=Niters[2], walltime = Inf,
                     CMAargs=list(control=list(maxit=Niters[1])),
                     LDargs=list(control=list(abstol=0.1), Iterations=Niters[2], Algorithm='CHARM',
-                    Thinning=1), parm.names=NULL, keepall=FALSE
+                    Thinning=1, CPUs = 1), parm.names=NULL, keepall=FALSE
                     ){
 
   timestart = proc.time()[3] # start timer
@@ -209,8 +209,12 @@ Highlander=function(parm=NULL, Data, likefunc, likefunctype=NULL, liketype=NULL,
     if(i == optim_iters){LDargs[['Iterations']] = NfinalMCMC}
 
     if(LDargs[['Iterations']] > 0){
-      LD_out = do.call('LaplacesDemon', c(list(Model=LDfunc, Data=quote(DataLD),  Initial.Values=parm_out),
-                            LDargs))
+      if(LDargs[["CPUs"]] > 1){
+        LD_out_hpc = do.call('LaplacesDemon.hpc', c(list(Model=LDfunc, Data=DataLD,  Initial.Values=parm_out), LDargs))
+        LD_out = LaplacesDemon::Combine(x = LD_out_hpc, Data = DataLD, Thinning = as.numeric(LDargs[["Thinning"]])) #stick them together
+      }else{
+        LD_out = do.call('LaplacesDemon', c(list(Model=LDfunc, Data=quote(DataLD),  Initial.Values=parm_out), LDargs))
+      }
 
       LD_out$Model = NULL #don't want this in case it is big!
       LD_out$Call = NULL #don't want this in case it is big!
